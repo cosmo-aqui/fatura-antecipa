@@ -41,7 +41,7 @@
   <header class="w-full border-b border-gray-200 bg-white">
     <div class="max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
       <!-- Logo Oficial Aqui ads (SVG Vetorial) -->
-      <a href="#" class="flex items-center select-none" aria-label="Aqui ads">
+      <a href="#" onclick="switchScreen('checkout'); return false;" class="flex items-center select-none" aria-label="Aqui ads">
         <svg width="134" height="34" viewBox="0 0 440 112" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-8 w-auto block">
           <defs>
             <linearGradient id="aquiAdsOfficialGrad" x1="0" y1="56" x2="440" y2="56" gradientUnits="userSpaceOnUse">
@@ -55,19 +55,29 @@
         </svg>
       </a>
 
-      <!-- User Profile & Menu -->
-      <div class="flex items-center gap-2.5 text-gray-800 cursor-pointer">
-        <div class="w-6 h-6 rounded-full overflow-hidden bg-amber-900 flex items-center justify-center text-white text-xs font-bold">
-          <svg class="w-4 h-4 text-amber-200" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+      <!-- Menu Direito: Botão Meu Faturamento + Perfil -->
+      <div class="flex items-center gap-4">
+        <button id="btnHeaderBilling" onclick="switchScreen('billing')" class="pill-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-semibold text-gray-800 shadow-2xs cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-        </div>
-        <span class="text-xs font-semibold text-gray-700">Olá, Usuário</span>
-        <button class="text-gray-600 hover:text-gray-900 p-1" aria-label="Menu">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <span>Meu Faturamento</span>
+          <span id="navBadgePending" class="bg-[#FF5500] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">1</span>
         </button>
+
+        <div class="flex items-center gap-2.5 text-gray-800 cursor-pointer">
+          <div class="w-6 h-6 rounded-full overflow-hidden bg-amber-900 flex items-center justify-center text-white text-xs font-bold">
+            <svg class="w-4 h-4 text-amber-200" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="text-xs font-semibold text-gray-700">Olá, Usuário</span>
+          <button class="text-gray-600 hover:text-gray-900 p-1" aria-label="Menu">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -77,13 +87,16 @@
     
     <!-- Back Link -->
     <div class="mb-8">
-      <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-800 hover:text-[#FF5500] transition">
+      <a href="#" onclick="handleBackClick(event)" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-800 hover:text-[#FF5500] transition">
         <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
         <span>voltar</span>
       </a>
     </div>
+
+    <!-- TELA 1: PAGAMENTO (CHECKOUT) -->
+    <div id="screenCheckout">
 
     <!-- Banner de Status quando NF Antecipada é solicitada -->
     <div id="nfStatusBanner" class="hidden mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4">
@@ -370,6 +383,146 @@
 
       </div>
     </div>
+    </div>
+
+    <!-- TELA 2: MEU FATURAMENTO (PROPOSTA A: 3 ABAS) -->
+    <div id="screenBilling" class="hidden space-y-6">
+      
+      <!-- Cabeçalho da Página -->
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Faturamento</h1>
+        <p class="text-xs text-gray-600 mt-2 leading-relaxed max-w-2xl">
+          Acompanhe suas notas fiscais, faturas comerciais (com ou sem campanha vinculada) e comprovantes de pagamento.
+        </p>
+      </div>
+
+      <!-- Cards de Resumo (KPIs) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_15px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+          <span class="text-xs text-gray-500">Total em faturas emitidas</span>
+          <strong id="kpiTotalAmount" class="text-xl font-bold text-gray-900 mt-1.5">R$ 57.500,00</strong>
+          <span id="kpiTotalCount" class="text-[11px] text-gray-400 mt-1">3 faturas registradas</span>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_15px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+          <span class="text-xs text-gray-500">Pagamentos pendentes</span>
+          <strong id="kpiPendingVal" class="text-xl font-bold text-[#FF5500] mt-1.5">R$ 12.500,00</strong>
+          <span id="kpiPendingSub" class="text-[11px] text-gray-400 mt-1">1 boleto disponível para emissão</span>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_15px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+          <span class="text-xs text-gray-500">Notas fiscais</span>
+          <strong id="kpiNFCount" class="text-xl font-bold text-gray-900 mt-1.5">2 emitidas</strong>
+          <span id="kpiNFSub" class="text-[11px] text-[#22C55E] font-semibold mt-1">Envio automático por e-mail ativo</span>
+        </div>
+
+        <div class="bg-gray-50/70 border border-dashed border-gray-300 rounded-xl p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-gray-600">Limite Pós-pago</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-gray-200 text-gray-700">2º Momento</span>
+          </div>
+          <p class="text-xs text-gray-500 my-1.5 leading-snug">
+            Espaço reservado para exibição de limite de crédito.
+          </p>
+          <span class="text-[11px] text-gray-400">Em breve disponível</span>
+        </div>
+      </div>
+
+      <!-- Container das 3 Abas (Proposta A) -->
+      <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.04)]">
+        
+        <!-- Navegação das 3 Abas -->
+        <div class="border-b border-gray-200 px-6 pt-3.5 bg-gray-50/60 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-7 -mb-px overflow-x-auto">
+            <button onclick="selectBillingTab('nf')" id="tabBtn-nf" class="pb-3 border-b-2 border-[#FF5500] text-gray-900 font-bold text-xs flex items-center gap-2 transition cursor-pointer whitespace-nowrap">
+              <span>Notas fiscais</span>
+              <span id="tabCount-nf" class="text-[11px] px-2 py-0.5 rounded-full bg-orange-50 text-[#FF5500] border border-orange-200 font-semibold">2</span>
+            </button>
+
+            <button onclick="selectBillingTab('faturas')" id="tabBtn-faturas" class="pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-900 font-semibold text-xs flex items-center gap-2 transition cursor-pointer whitespace-nowrap">
+              <span>Faturas emitidas</span>
+              <span id="tabCount-faturas" class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 font-semibold">3</span>
+            </button>
+
+            <button onclick="selectBillingTab('pagamentos')" id="tabBtn-pagamentos" class="pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-900 font-semibold text-xs flex items-center gap-2 transition cursor-pointer whitespace-nowrap">
+              <span>Pagamentos e pendências</span>
+              <span id="tabCount-pagamentos" class="text-[11px] px-2 py-0.5 rounded-full bg-orange-50 text-[#FF5500] font-semibold">1 pendente</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ABA 1: NOTAS FISCAIS -->
+        <div id="tabPanel-nf" class="p-6 space-y-4">
+          <p class="text-xs text-gray-500">
+            Documentos fiscais emitidos e solicitações de nota fiscal antecipada em processamento, com atalho para o pedido relacionado.
+          </p>
+
+          <div class="overflow-x-auto border border-gray-200 rounded-lg">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3 px-4">Nota Fiscal</th>
+                  <th class="py-3 px-4">Emissão</th>
+                  <th class="py-3 px-4">Fatura Comercial</th>
+                  <th class="py-3 px-4">Pedido / Campanha</th>
+                  <th class="py-3 px-4">Valor</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyAquiNF" class="divide-y divide-gray-200 text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ABA 2: FATURAS EMITIDAS -->
+        <div id="tabPanel-faturas" class="p-6 space-y-4 hidden">
+          <p class="text-xs text-gray-500">
+            Consulte todas as faturas comerciais geradas (inclusive <strong>faturas sem campanha associada</strong>) e solicite sua nota fiscal antecipada.
+          </p>
+
+          <div class="overflow-x-auto border border-gray-200 rounded-lg">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3 px-4">Nº da Fatura</th>
+                  <th class="py-3 px-4">Data de Emissão</th>
+                  <th class="py-3 px-4">Vínculo (Campanha ou Avulsa)</th>
+                  <th class="py-3 px-4">Valor</th>
+                  <th class="py-3 px-4">Nota Fiscal</th>
+                  <th class="py-3 px-4 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyAquiFaturas" class="divide-y divide-gray-200 text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ABA 3: PAGAMENTOS E PENDÊNCIAS -->
+        <div id="tabPanel-pagamentos" class="p-6 space-y-4 hidden">
+          <p class="text-xs text-gray-500">
+            Gerencie pagamentos em aberto, emita boletos ou baixe a <strong>Fatura Paga (Comprovante de Quitação)</strong> de pedidos já liquidados.
+          </p>
+
+          <div class="overflow-x-auto border border-gray-200 rounded-lg">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3 px-4">Fatura</th>
+                  <th class="py-3 px-4">Vencimento</th>
+                  <th class="py-3 px-4">Origem</th>
+                  <th class="py-3 px-4">Valor</th>
+                  <th class="py-3 px-4">Status do Pagamento</th>
+                  <th class="py-3 px-4 text-right">Boleto / Fatura Paga (Comprovante)</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyAquiPagamentos" class="divide-y divide-gray-200 text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </main>
 
   <!-- MODAL: EMISSÃO ANTECIPADA DE NOTA FISCAL (TERMOS COMPLEMENTARES) -->
@@ -394,6 +547,18 @@
         <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-lg px-3.5 py-2.5">
           <span class="text-xs font-semibold text-orange-900">Modalidade habilitada pelo Time Comercial</span>
           <span class="text-xs bg-white text-orange-800 border border-orange-200 px-2 py-0.5 rounded font-medium">Cliente Elegível</span>
+        </div>
+
+        <!-- Resumo da Fatura vinculada -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div>
+            <span class="text-gray-500">Fatura de referência:</span>
+            <strong id="modalRefInvoice" class="text-gray-900 ml-1">#FAT-2026-089</strong>
+          </div>
+          <div>
+            <span class="text-gray-500">Origem:</span>
+            <span id="modalRefOrigin" class="text-gray-800 font-medium ml-1">Checkout Multi-campanhas</span>
+          </div>
         </div>
 
         <p class="text-xs text-gray-600 leading-relaxed">
@@ -488,6 +653,194 @@
     let isPf = true;
     let nfRequested = false;
     let faturaEmitida = false;
+    let currentScreen = 'checkout';
+    let activeInvoiceForModal = '#FAT-2026-089';
+
+    const invoices = [
+      {
+        id: '#FAT-2026-074',
+        date: '18/10/2026',
+        dueDate: '25/10/2026',
+        hasCampaign: false,
+        originLabel: 'Fatura comercial avulsa (Sem campanha)',
+        orderRef: null,
+        amount: 'R$ 12.500,00',
+        numericAmount: 12500,
+        paymentStatus: 'pending',
+        nfStatus: 'not_requested',
+        nfNumber: null,
+        nfDate: null
+      },
+      {
+        id: '#FAT-2026-050',
+        date: '10/10/2026',
+        dueDate: '15/10/2026',
+        hasCampaign: true,
+        originLabel: 'Campanha OOH + Digital',
+        orderRef: 'Pedido #10450',
+        amount: 'R$ 20.000,00',
+        numericAmount: 20000,
+        paymentStatus: 'paid',
+        nfStatus: 'issued',
+        nfNumber: 'NF-009842',
+        nfDate: '15/10/2026'
+      },
+      {
+        id: '#FAT-2026-012',
+        date: '01/09/2026',
+        dueDate: '05/09/2026',
+        hasCampaign: true,
+        originLabel: 'Campanha Institucional',
+        orderRef: 'Pedido #10112',
+        amount: 'R$ 25.000,00',
+        numericAmount: 25000,
+        paymentStatus: 'paid',
+        nfStatus: 'issued',
+        nfNumber: 'NF-009510',
+        nfDate: '06/09/2026'
+      }
+    ];
+
+    function switchScreen(screen) {
+      currentScreen = screen;
+      const checkoutEl = document.getElementById('screenCheckout');
+      const billingEl = document.getElementById('screenBilling');
+      const btnHeader = document.getElementById('btnHeaderBilling');
+
+      if (screen === 'billing') {
+        checkoutEl.classList.add('hidden');
+        billingEl.classList.remove('hidden');
+        btnHeader.classList.add('highlight-nf');
+        renderBillingTables();
+      } else {
+        billingEl.classList.add('hidden');
+        checkoutEl.classList.remove('hidden');
+        btnHeader.classList.remove('highlight-nf');
+      }
+    }
+
+    function handleBackClick(event) {
+      event.preventDefault();
+      if (currentScreen === 'billing') {
+        switchScreen('checkout');
+      } else {
+        showToast('Retornando para a etapa anterior da campanha...');
+      }
+    }
+
+    function selectBillingTab(tab) {
+      ['nf', 'faturas', 'pagamentos'].forEach(t => {
+        const panel = document.getElementById('tabPanel-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (t === tab) {
+          panel.classList.remove('hidden');
+          btn.className = 'pb-3 border-b-2 border-[#FF5500] text-gray-900 font-bold text-xs flex items-center gap-2 transition cursor-pointer whitespace-nowrap';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-900 font-semibold text-xs flex items-center gap-2 transition cursor-pointer whitespace-nowrap';
+        }
+      });
+    }
+
+    function renderBillingTables() {
+      const totalVal = invoices.reduce((acc, i) => acc + i.numericAmount, 0);
+      const pendingList = invoices.filter(i => i.paymentStatus === 'pending');
+      const pendingVal = pendingList.reduce((acc, i) => acc + i.numericAmount, 0);
+      const nfList = invoices.filter(i => i.nfStatus === 'issued' || i.nfStatus === 'requested');
+
+      document.getElementById('kpiTotalAmount').textContent = totalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('kpiTotalCount').textContent = `${invoices.length} faturas registradas`;
+      document.getElementById('kpiPendingVal').textContent = pendingVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('kpiPendingSub').textContent = `${pendingList.length} boleto(s) pendente(s)`;
+      document.getElementById('kpiNFCount').textContent = `${nfList.length} registrada(s)`;
+      document.getElementById('navBadgePending').textContent = pendingList.length;
+
+      document.getElementById('tabCount-nf').textContent = nfList.length;
+      document.getElementById('tabCount-faturas').textContent = invoices.length;
+      document.getElementById('tabCount-pagamentos').textContent = `${pendingList.length} pendente(s)`;
+
+      // Aba 1: Notas Fiscais
+      document.getElementById('tbodyAquiNF').innerHTML = nfList.map(i => `
+        <tr class="hover:bg-gray-50/80 transition">
+          <td class="py-3.5 px-4 font-bold text-gray-900">${i.nfNumber}</td>
+          <td class="py-3.5 px-4 text-gray-500">${i.nfDate}</td>
+          <td class="py-3.5 px-4 font-semibold text-gray-700">${i.id}</td>
+          <td class="py-3.5 px-4">
+            ${i.hasCampaign
+              ? `<span class="font-medium text-gray-800">${i.originLabel}</span> <a href="#" onclick="event.preventDefault(); showToast('Acessando ${i.orderRef}...');" class="block text-[11px] text-[#FF5500] underline mt-0.5">${i.orderRef}</a>`
+              : `<span class="inline-block px-2 py-0.5 rounded bg-gray-800 text-white text-[11px] font-medium">Sem campanha vinculada</span>`
+            }
+          </td>
+          <td class="py-3.5 px-4 font-bold text-gray-900">${i.amount}</td>
+          <td class="py-3.5 px-4">
+            ${i.nfStatus === 'issued'
+              ? `<span class="text-xs font-bold text-[#22C55E]">● Emitida</span>`
+              : `<span class="text-xs font-bold text-[#FF5500]">● Solicitada (Envio por e-mail)</span>`
+            }
+          </td>
+          <td class="py-3.5 px-4 text-right">
+            ${i.nfStatus === 'issued'
+              ? `<button onclick="showToast('Baixando XML/PDF da ${i.nfNumber}...')" class="pill-btn border border-gray-200 rounded-full px-3.5 py-1 text-xs font-semibold text-gray-800 bg-white shadow-2xs cursor-pointer">Baixar nota fiscal</button>`
+              : `<span class="text-xs text-gray-400">Em processamento</span>`
+            }
+          </td>
+        </tr>
+      `).join('');
+
+      // Aba 2: Faturas Emitidas
+      document.getElementById('tbodyAquiFaturas').innerHTML = invoices.map(i => `
+        <tr class="hover:bg-gray-50/80 transition">
+          <td class="py-3.5 px-4 font-bold text-gray-900">${i.id}</td>
+          <td class="py-3.5 px-4 text-gray-500">${i.date}</td>
+          <td class="py-3.5 px-4">
+            ${i.hasCampaign
+              ? `<span class="font-medium text-gray-800">${i.originLabel}</span> <span class="text-[11px] text-gray-400 block">${i.orderRef}</span>`
+              : `<span class="inline-block px-2 py-0.5 rounded bg-gray-800 text-white text-[11px] font-medium">Sem campanha associada</span>`
+            }
+          </td>
+          <td class="py-3.5 px-4 font-bold text-gray-900">${i.amount}</td>
+          <td class="py-3.5 px-4">
+            ${i.nfStatus === 'issued'
+              ? `<span class="text-xs font-bold text-[#22C55E]">${i.nfNumber}</span>`
+              : i.nfStatus === 'requested'
+              ? `<span class="text-xs font-bold text-[#FF5500]">Solicitada por e-mail</span>`
+              : `<span class="text-xs text-gray-400">Não solicitada</span>`
+            }
+          </td>
+          <td class="py-3.5 px-4 text-right space-x-2 whitespace-nowrap">
+            <a href="fatura_comercial_aqui_ads.pdf" target="_blank" rel="noopener" onclick="showToast('Baixando fatura comercial ${i.id}...')" class="pill-btn border border-gray-200 rounded-full px-3.5 py-1 text-xs font-semibold text-gray-800 bg-white shadow-2xs inline-flex items-center cursor-pointer no-underline">
+              Baixar fatura comercial
+            </a>
+            ${i.nfStatus === 'not_requested'
+              ? `<button onclick="openNfModal('${i.id}', '${i.originLabel}')" class="pill-btn border border-[#FF5500] rounded-full px-3.5 py-1 text-xs font-semibold text-[#FF5500] bg-orange-50/50 hover:bg-orange-50 shadow-2xs cursor-pointer">Nota fiscal antecipada</button>`
+              : ``
+            }
+          </td>
+        </tr>
+      `).join('');
+
+      // Aba 3: Pagamentos e Pendências
+      document.getElementById('tbodyAquiPagamentos').innerHTML = invoices.map(i => `
+        <tr class="hover:bg-gray-50/80 transition">
+          <td class="py-3.5 px-4 font-bold text-gray-900">${i.id}</td>
+          <td class="py-3.5 px-4 text-gray-500">${i.dueDate}</td>
+          <td class="py-3.5 px-4 text-gray-700">${i.originLabel}</td>
+          <td class="py-3.5 px-4 font-bold text-gray-900">${i.amount}</td>
+          <td class="py-3.5 px-4">
+            ${i.paymentStatus === 'paid'
+              ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-50 text-[#22C55E]">✓ Pago</span>`
+              : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-50 text-[#FF5500]">● Pendente</span>`
+            }
+          </td>
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
+            ${i.paymentStatus === 'pending'
+              ? `<button onclick="showToast('Emitindo boleto atualizado de ${i.id}...')" class="px-3.5 py-1.5 rounded-md bg-[#FF5500] hover:bg-[#E04800] text-white font-semibold text-xs transition cursor-pointer">Emitir boleto</button>`
+              : `<button onclick="showToast('Baixando Fatura Paga (Comprovante de Quitação) de ${i.id}...')" class="pill-btn border border-gray-200 rounded-full px-3.5 py-1 text-xs font-semibold text-gray-800 bg-white shadow-2xs cursor-pointer">Baixar fatura paga (Comprovante)</button>`
+            }
+          </td>
+        </tr>
+      `).join('');
+    }
 
     function handleEmitirFatura(event) {
       faturaEmitida = true;
@@ -495,6 +848,24 @@
       btnNf.classList.remove('hidden');
       btnNf.classList.add('inline-flex');
 
+      if (!invoices.find(i => i.id === '#FAT-2026-089')) {
+        invoices.unshift({
+          id: '#FAT-2026-089',
+          date: '21/10/2026',
+          dueDate: '28/10/2026',
+          hasCampaign: false,
+          originLabel: 'Fatura emitida antes de fechar pedido (Sem campanha)',
+          orderRef: null,
+          amount: 'R$ 35.000,00',
+          numericAmount: 35000,
+          paymentStatus: 'pending',
+          nfStatus: nfRequested ? 'requested' : 'not_requested',
+          nfNumber: nfRequested ? 'Solicitada (Financeiro)' : null,
+          nfDate: nfRequested ? '21/10/2026' : null
+        });
+      }
+
+      renderBillingTables();
       showToast('Fatura comercial emitida! O botão "Nota fiscal antecipada" agora está disponível.');
     }
 
@@ -606,7 +977,10 @@
       icon.classList.toggle('rotate-180');
     }
 
-    function openNfModal() {
+    function openNfModal(invoiceId, originLabel) {
+      activeInvoiceForModal = invoiceId || '#FAT-2026-089';
+      document.getElementById('modalRefInvoice').textContent = activeInvoiceForModal;
+      document.getElementById('modalRefOrigin').textContent = originLabel || 'Checkout Multi-campanhas (OOH + Digital)';
       document.getElementById('nfModal').classList.remove('hidden');
     }
 
@@ -633,18 +1007,28 @@
 
     function confirmNfRequest() {
       const email = document.getElementById('nfEmailInput').value.trim();
-      nfRequested = true;
 
-      document.getElementById('bannerEmailDisplay').textContent = email;
-      document.getElementById('nfStatusBanner').classList.remove('hidden');
-      document.getElementById('assetLockBadge').classList.remove('hidden');
+      const inv = invoices.find(i => i.id === activeInvoiceForModal);
+      if (inv) {
+        inv.nfStatus = 'requested';
+        inv.nfNumber = 'Solicitada (Financeiro)';
+        inv.nfDate = '21/10/2026';
+      }
 
-      const btnNf = document.getElementById('btnNfAntecipada');
-      btnNf.classList.add('highlight-nf');
-      document.getElementById('nfBadgeCheck').classList.remove('hidden');
+      if (activeInvoiceForModal === '#FAT-2026-089') {
+        nfRequested = true;
+        document.getElementById('bannerEmailDisplay').textContent = email;
+        document.getElementById('nfStatusBanner').classList.remove('hidden');
+        document.getElementById('assetLockBadge').classList.remove('hidden');
 
+        const btnNf = document.getElementById('btnNfAntecipada');
+        btnNf.classList.add('highlight-nf');
+        document.getElementById('nfBadgeCheck').classList.remove('hidden');
+      }
+
+      renderBillingTables();
       closeNfModal();
-      showToast('Termos aceitos! O Financeiro foi notificado para emitir a NF Antecipada.');
+      showToast(`Termos aceitos! O Financeiro foi notificado para emitir a NF Antecipada (${activeInvoiceForModal}).`);
     }
 
     function handleMainAction() {
@@ -665,6 +1049,8 @@
         toast.classList.add('hidden');
       }, 3500);
     }
+
+    renderBillingTables();
   </script>
 </body>
 </html>
